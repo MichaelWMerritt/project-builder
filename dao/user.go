@@ -4,12 +4,12 @@ import "github.com/michaelwmerritt/project-builder/model"
 
 type User interface {
 
-	GetAllUsers() *[]model.User
+	GetAllUsers() (*[]model.User, error)
 
-	GetUser(userName string) *model.User
+	GetUser(userName string) (*model.User, error)
 
-	DeleteUser(userName string)
+	DeleteUser(userName string) error
 
-	UpdateUser(user model.User) *model.User
+	UpdateUser(user model.User) error
 
 }

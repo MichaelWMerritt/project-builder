@@ -7,7 +7,6 @@ import (
 	"github.com/michaelwmerritt/project-builder/model"
 	"net/http"
 	"github.com/michaelwmerritt/project-builder/dao"
-	"fmt"
 )
 
 func CreateModuleRoutes() []model.Route {
@@ -24,10 +23,17 @@ func CreateModuleRoutes() []model.Route {
 			"/modules/{moduleId}",
 			GetModule,
 		},
+		{
+			"DeleteModule",
+			"DELETE",
+			"/modules/{moduleId}",
+			DeleteModule,
+		},
 	}
 }
 
 func GetAllModules(w http.ResponseWriter, r *http.Request) {
+	panic("testing")
 	//modules := []model.Module{
 	//	{
 	//		Id:			"module1",
@@ -57,14 +63,16 @@ func GetModule(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	moduleId := vars["moduleId"]
 
+
 	module, err := dao.GetModule(moduleId)
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	status := http.StatusOK
 	if err != nil {
-		status = http.StatusBadRequest
+		w.WriteHeader(http.StatusBadRequest)
+		return
 	}
-	w.WriteHeader(status)
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	w.WriteHeader(http.StatusOK)
 	if err := json.NewEncoder(w).Encode(module); err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
 		panic(err)
 	}
 }
@@ -73,7 +81,9 @@ func DeleteModule(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	moduleId := vars["moduleId"]
 
-	dao.DeleteModule(moduleId)
+	if err := dao.DeleteModule(moduleId); err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+	}
 	//w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	//w.WriteHeader(http.StatusOK)
 	//if err != nil {
@@ -120,23 +130,3 @@ func DeleteModule(w http.ResponseWriter, r *http.Request) {
 //w.WriteHeader(404)
 //return
 //}
-//
-//// Grab id
-//oid := bson.ObjectIdHex(id)
-//
-//// Stub user
-//u := models.User{}
-//
-//// Fetch user
-//if err := uc.session.DB("go_rest_tutorial").C("users").FindId(oid).One(&u); err != nil {
-//w.WriteHeader(404)
-//return
-//}
-//
-//// Marshal provided interface into JSON structure
-//uj, _ := json.Marshal(u)
-//
-//// Write content-type, statuscode, payload
-//w.Header().Set("Content-Type", "application/json")
-//w.WriteHeader(200)
-//fmt.Fprintf(w, "%s", uj)

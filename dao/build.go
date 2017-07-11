@@ -4,12 +4,12 @@ import "github.com/michaelwmerritt/project-builder/model"
 
 type Build interface {
 
-	GetAllBuilds() *[]model.Build
+	GetAllBuilds() (*[]model.Build, error)
 
-	GetBuild(buildId string) *model.Build
+	GetBuild(buildId string) (*model.Build, error)
 
-	DeleteBuild(buildId string)
+	DeleteBuild(buildId string) error
 
-	CreateBuild(build model.Build) *model.Build
+	CreateBuild(build model.Build) (*model.Build, error)
 
 }

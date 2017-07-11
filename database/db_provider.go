@@ -1,14 +1,13 @@
-package model
+package database
 
 import (
 	"gopkg.in/mgo.v2"
-	"github.com/michaelwmerritt/project-builder/database"
 )
 
 type DBProvider uint
 
 func (dbProvider DBProvider) DB() *mgo.Database {
-	return database.GetDB(databases[dbProvider])
+	return GetDB(databases[dbProvider])
 }
 
 const (

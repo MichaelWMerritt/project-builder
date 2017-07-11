@@ -37,8 +37,11 @@ func GetAllReleases(w http.ResponseWriter, r *http.Request) {
 	//		RepoType:    model.SVN,
 	//	},
 	//}
-	releases := dao.GetAllReleases()
+	releases, err := dao.GetAllReleases()
 
+	if err != nil {
+
+	}
 	if len(releases) == 0 {
 
 	}
@@ -54,7 +57,10 @@ func GetRelease(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	releaseId := vars["releaseId"]
 
-	release := dao.GetRelease(releaseId)
+	release, err := dao.GetRelease(releaseId)
+	if err != nil {
+
+	}
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	w.WriteHeader(http.StatusOK)
 	if err := json.NewEncoder(w).Encode(release); err != nil {

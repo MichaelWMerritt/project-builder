@@ -8,6 +8,8 @@ import (
 	"github.com/michaelwmerritt/project-builder/model"
 
 	"github.com/gorilla/mux"
+	"github.com/gorilla/handlers"
+	"os"
 )
 
 var (
@@ -15,7 +17,7 @@ var (
 )
 
 func main() {
-	log.Fatal(http.ListenAndServe(port, NewRouter()))
+	log.Fatal(http.ListenAndServe(port, handlers.CORS()(handlers.LoggingHandler(os.Stdout, handlers.RecoveryHandler()(NewRouter())))))
 }
 
 func NewRouter() *mux.Router {

@@ -2,26 +2,27 @@ package dao
 
 import (
 	"github.com/michaelwmerritt/project-builder/model"
+	"github.com/michaelwmerritt/project-builder/database"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 )
 
-func GetAllReleases() *[]model.Release {
-	releases := &[]model.Release{}
-	getReleaseCollection().Find(bson.M{}).All(releases)
-	return releases
+func GetAllReleases() ([]model.Release, error) {
+	releases := []model.Release{}
+	err := getReleaseCollection().Find(bson.M{}).All(&releases)
+	return releases, err
 }
 
-func GetRelease(releaseId string) *model.Release {
-	release := &model.Release{}
-	getReleaseCollection().FindId(releaseId).One(release)
-	return release
+func GetRelease(releaseId string) (model.Release, error) {
+	release := model.Release{}
+	err := getReleaseCollection().FindId(releaseId).One(&release)
+	return release, err
 }
 
-func DeleteRelease(releaseId string) {
-	getReleaseCollection().RemoveId(releaseId)
+func DeleteRelease(releaseId string) error {
+	return getReleaseCollection().RemoveId(releaseId)
 }
 
 func getReleaseCollection() *mgo.Collection {
-	return model.PROJECT.DB().C("release")
+	return database.PROJECT.DB().C("release")
 }

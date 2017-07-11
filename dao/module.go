@@ -4,10 +4,10 @@ import "github.com/michaelwmerritt/project-builder/model"
 
 type Module interface {
 
-	GetAllModules() *[]model.Module
+	GetAllModules() ([]model.Module, error)
 
-	GetModule(moduleId string) *model.Module
+	GetModule(moduleId string) (model.Module, error)
 
-	DeleteModule(moduleId string)
+	DeleteModule(moduleId string) error
 
 }

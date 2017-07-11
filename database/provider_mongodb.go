@@ -5,10 +5,11 @@ import (
 	//"log"
 
 	"gopkg.in/mgo.v2"
-	"os"
-	"fmt"
-	"encoding/json"
-	"github.com/michaelwmerritt/project-builder/model"
+
+	//"os"
+	//"fmt"
+	//"encoding/json"
+	//"github.com/michaelwmerritt/project-builder/model"
 )
 
 const (
@@ -43,14 +44,14 @@ func GetDB(databaseName string) *mgo.Database {
 	//fmt.Println("Phone:", result.Phone)
 }
 
-func LoadMongoDBConfiguration() model.MongoDBConfig {
-	var mongoDBConfig model.MongoDBConfig
-	mongoDBConfigFile, err := os.Open(mongodb_config_file)
-	defer mongoDBConfigFile.Close()
-	if err != nil {
-		fmt.Println(err.Error())
-	}
-	jsonParser := json.NewDecoder(mongoDBConfigFile)
-	jsonParser.Decode(&mongoDBConfig)
-	return mongoDBConfig
-}
+//func LoadMongoDBConfiguration() model.MongoDBConfig {
+//	var mongoDBConfig model.MongoDBConfig
+//	mongoDBConfigFile, err := os.Open(mongodb_config_file)
+//	defer mongoDBConfigFile.Close()
+//	if err != nil {
+//		fmt.Println(err.Error())
+//	}
+//	jsonParser := json.NewDecoder(mongoDBConfigFile)
+//	jsonParser.Decode(&mongoDBConfig)
+//	return mongoDBConfig
+//}
