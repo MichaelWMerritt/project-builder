@@ -10,8 +10,12 @@ import (
 	"github.com/gorilla/mux"
 )
 
+var (
+	port = ":8080"
+)
+
 func main() {
-	log.Fatal(http.ListenAndServe(":8080", NewRouter()))
+	log.Fatal(http.ListenAndServe(port, NewRouter()))
 }
 
 func NewRouter() *mux.Router {

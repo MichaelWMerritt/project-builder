@@ -39,6 +39,10 @@ func GetAllReleases(w http.ResponseWriter, r *http.Request) {
 	//}
 	releases := dao.GetAllReleases()
 
+	if len(releases) == 0 {
+
+	}
+
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	w.WriteHeader(http.StatusOK)
 	if err := json.NewEncoder(w).Encode(releases); err != nil {

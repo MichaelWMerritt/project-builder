@@ -1,6 +1,8 @@
 package model
 
 type VersionInfo struct {
-	Url         string		`json:"url"`
-	Version     string      `json:"version"`
+
+	Url         string		`bson:"url" json:"url"`
+	Version     string      `bson:"version" json:"version"`
+
 }
