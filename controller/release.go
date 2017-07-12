@@ -23,20 +23,16 @@ func CreateReleaseRoutes() []model.Route {
 			"/releases/{releaseId}",
 			GetRelease,
 		},
+		{
+			"DeleteRelease",
+			"DELETE",
+			"/releases/{releaseId}",
+			DeleteRelease,
+		},
 	}
 }
 
 func GetAllReleases(w http.ResponseWriter, r *http.Request) {
-	//releases := []model.Release{
-	//	{
-	//		VersionInfo: model.VersionInfo{DisplayName: "release1"},
-	//		RepoType:    model.GIT,
-	//	},
-	//	{
-	//		VersionInfo: model.VersionInfo{DisplayName: "release2"},
-	//		RepoType:    model.SVN,
-	//	},
-	//}
 	releases, err := dao.GetAllReleases()
 
 	if err != nil {
@@ -54,8 +50,7 @@ func GetAllReleases(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetRelease(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	releaseId := vars["releaseId"]
+	releaseId := getReleaseId(r)
 
 	release, err := dao.GetRelease(releaseId)
 	if err != nil {
@@ -66,4 +61,14 @@ func GetRelease(w http.ResponseWriter, r *http.Request) {
 	if err := json.NewEncoder(w).Encode(release); err != nil {
 		panic(err)
 	}
+}
+
+func DeleteRelease(w http.ResponseWriter, r *http.Request) {
+	releaseId := getReleaseId(r)
+
+	dao.DeleteRelease(releaseId)
+}
+
+func getReleaseId(r *http.Request) string {
+	return mux.Vars(r)["releaseId"]
 }

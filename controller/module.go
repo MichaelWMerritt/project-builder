@@ -60,9 +60,7 @@ func GetAllModules(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetModule(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	moduleId := vars["moduleId"]
-
+	moduleId := getModuleId(r)
 
 	module, err := dao.GetModule(moduleId)
 	if err != nil {
@@ -78,8 +76,7 @@ func GetModule(w http.ResponseWriter, r *http.Request) {
 }
 
 func DeleteModule(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	moduleId := vars["moduleId"]
+	moduleId := getModuleId(r)
 
 	if err := dao.DeleteModule(moduleId); err != nil {
 		w.WriteHeader(http.StatusBadRequest)
@@ -130,3 +127,7 @@ func DeleteModule(w http.ResponseWriter, r *http.Request) {
 //w.WriteHeader(404)
 //return
 //}
+
+func getModuleId(r *http.Request) string {
+	return mux.Vars(r)["moduleId"]
+}
