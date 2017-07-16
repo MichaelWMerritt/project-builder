@@ -6,8 +6,8 @@ import (
 
 type DBProvider uint
 
-func (dbProvider DBProvider) DB() *mgo.Database {
-	return GetDB(databases[dbProvider])
+func (dbProvider DBProvider) DB(session *mgo.Session) *mgo.Database {
+	return session.DB(databases[dbProvider])
 }
 
 const (

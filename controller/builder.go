@@ -6,6 +6,7 @@ import (
 	//"encoding/json"
 	//"github.com/gorilla/mux"
 	//"fmt"
+	"github.com/michaelwmerritt/project-builder/server"
 )
 
 func CreateBuilderRoutes() []model.Route {
@@ -13,31 +14,31 @@ func CreateBuilderRoutes() []model.Route {
 		{
 			"Build",
 			"POST",
-			"/builds",
+			server.API_ENDPOINT + "/builds",
 			Build,
 		},
 		{
 			"GetBuildStatus",
 			"GET",
-			"/builds/{buildId}",
+			server.API_ENDPOINT + "/builds/{buildId}",
 			GetBuildStatus,
 		},
 		{
 			"CancelBuild",
 			"PATCH",
-			"/builds/{buildId}",
+			server.API_ENDPOINT + "/builds/{buildId}",
 			CancelBuild,
 		},
 		{
 			"DeleteBuild",
 			"DELETE",
-			"/builds/{buildId}",
+			server.API_ENDPOINT + "/builds/{buildId}",
 			DeleteBuild,
 		},
 		{
 			"GetBuildResult",
 			"GET",
-			"/builds/{buildId}/result",
+			server.API_ENDPOINT + "/builds/{buildId}/result",
 			GetBuildResult,
 		},
 	}

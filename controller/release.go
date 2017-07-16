@@ -2,11 +2,17 @@ package controller
 
 import (
 	"encoding/json"
-	//"fmt"
 	"github.com/gorilla/mux"
 	"github.com/michaelwmerritt/project-builder/model"
 	"net/http"
 	"github.com/michaelwmerritt/project-builder/dao"
+	"github.com/michaelwmerritt/project-builder/server"
+)
+
+const RELEASE_ID  = "releaseId"
+
+var (
+	releaseDao = dao.NewReleaseDao()
 )
 
 func CreateReleaseRoutes() []model.Route {
@@ -14,61 +20,60 @@ func CreateReleaseRoutes() []model.Route {
 		{
 			"GetAllReleases",
 			"GET",
-			"/releases",
+			server.API_ENDPOINT + "/releases",
 			GetAllReleases,
 		},
 		{
 			"GetRelease",
 			"GET",
-			"/releases/{releaseId}",
+			server.API_ENDPOINT + "/releases/{releaseId}",
 			GetRelease,
 		},
 		{
 			"DeleteRelease",
 			"DELETE",
-			"/releases/{releaseId}",
+			server.API_ENDPOINT + "/releases/{releaseId}",
 			DeleteRelease,
 		},
 	}
 }
 
 func GetAllReleases(w http.ResponseWriter, r *http.Request) {
-	releases, err := dao.GetAllReleases()
-
+	releases, err := releaseDao.GetAllReleases()
 	if err != nil {
-
+		HandleError(w, err)
+		return
 	}
-	if len(releases) == 0 {
-
-	}
-
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	w.WriteHeader(http.StatusOK)
 	if err := json.NewEncoder(w).Encode(releases); err != nil {
-		panic(err)
+		HandleServerError(w, "release.GetAllReleases: Failed to convert releases")
 	}
 }
 
 func GetRelease(w http.ResponseWriter, r *http.Request) {
 	releaseId := getReleaseId(r)
-
-	release, err := dao.GetRelease(releaseId)
+	release, err := releaseDao.GetRelease(releaseId)
 	if err != nil {
-
+		HandleNotFoundError(w, err, releaseId)
+		return
 	}
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	w.WriteHeader(http.StatusOK)
 	if err := json.NewEncoder(w).Encode(release); err != nil {
-		panic(err)
+		HandleServerError(w, "release.GetRelease: Failed to convert release " + releaseId)
 	}
 }
 
 func DeleteRelease(w http.ResponseWriter, r *http.Request) {
 	releaseId := getReleaseId(r)
-
-	dao.DeleteRelease(releaseId)
+	if err := releaseDao.DeleteRelease(releaseId); err != nil {
+		HandleNotFoundError(w, err, releaseId)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
 }
 
 func getReleaseId(r *http.Request) string {
-	return mux.Vars(r)["releaseId"]
+	return mux.Vars(r)[RELEASE_ID]
 }

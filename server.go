@@ -10,37 +10,44 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/gorilla/handlers"
 	"os"
+	"github.com/michaelwmerritt/project-builder/server"
 )
 
-var (
-	port = ":8080"
+const  (
+	serverAddress = ":8080"
 )
 
 func main() {
-	log.Fatal(http.ListenAndServe(port, handlers.CORS()(handlers.LoggingHandler(os.Stdout, handlers.RecoveryHandler()(NewRouter())))))
+	log.Fatal(http.ListenAndServe(serverAddress, createHandlers()))
 }
 
-func NewRouter() *mux.Router {
+func createHandlers() http.Handler {
+	return handlers.CORS()(
+		handlers.LoggingHandler(
+			os.Stdout, handlers.RecoveryHandler()(
+				createRouter())))
+}
 
+func createRouter() *mux.Router {
 	router := mux.NewRouter().StrictSlash(true)
 
-	for _, route := range InitializeRoutes() {
+	for _, route := range initializeRoutes() {
 		var handler http.Handler
 
 		handler = route.HandlerFunc
-		handler = CreateLogger(handler, route.Name)
+		loggerAdapter := server.CreateLoggerAdapter(route.Name)
 
 		router.
 			Methods(route.Method).
 			Path(route.Pattern).
 			Name(route.Name).
-			Handler(handler)
+			Handler(server.Adapt(handler, loggerAdapter))
 	}
 
 	return router
 }
 
-func InitializeRoutes() []model.Route {
+func initializeRoutes() []model.Route {
 	routes := controller.CreateIndexRoutes()
 	routes = append(routes, controller.CreateReleaseRoutes()...)
 	routes = append(routes, controller.CreateModuleRoutes()...)

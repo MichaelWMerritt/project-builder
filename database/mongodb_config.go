@@ -1,4 +1,4 @@
-package model
+package database
 
 type MongoDBConfig struct {
 

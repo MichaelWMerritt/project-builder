@@ -4,34 +4,45 @@ import (
 	"github.com/michaelwmerritt/project-builder/model"
 	"github.com/michaelwmerritt/project-builder/database"
 	"gopkg.in/mgo.v2/bson"
-	"gopkg.in/mgo.v2"
+	"github.com/michaelwmerritt/project-builder/datastore"
 )
 
-func GetAllModules() ([]model.Module, error) {
-	modules := []model.Module{}
-	err := getModulesCollection().Find(bson.M{}).All(&modules)
-	return modules, err
-	//if err != nil {
-	//	panic(err)
-	//}
-	//return modules
+type ModuleDao struct {
+	moduleDatastore datastore.Module
 }
 
-func GetModule(moduleId string) (model.Module, error) {
-	module := model.Module{}
-	err := getModulesCollection().FindId(moduleId).One(&module)
-	//err := getModulesCollection().FindId(moduleId).One(&module)
-	//if err != nil {
-	//	panic(err)
-	//}
-	//return module
-	return module, err
+func NewModuleDao() ModuleDao {
+	return ModuleDao{moduleDatastore:datastore.NewModuleDatastore()}
 }
 
-func DeleteModule(moduleId string) error {
-	return getModulesCollection().RemoveId(moduleId)
+func (moduleDao ModuleDao) GetAllModules() (modules []model.Module, err error) {
+	results, err := moduleDao.moduleDatastore.Find(getModuleCollectionProvider(), bson.M{}, 0, 0)
+	modules = make([]model.Module, len(results))
+	for i, module := range results {
+		var m model.Module
+		bsonBytes, _ := bson.Marshal(module)
+		bson.Unmarshal(bsonBytes, &m)
+		modules[i] = m
+	}
+	return
 }
 
-func getModulesCollection() *mgo.Collection {
-	return database.PROJECT.DB().C("modules")
+func (moduleDao ModuleDao) GetModule(moduleId string) (module model.Module, err error) {
+	result, err := moduleDao.moduleDatastore.FindOne(getModuleCollectionProvider(), bson.M{"_id":moduleId})
+	bsonBytes, _ := bson.Marshal(result)
+	bson.Unmarshal(bsonBytes, &module)
+	return
+}
+
+func (moduleDao ModuleDao) DeleteModule(moduleId string) (err error) {
+	err = moduleDao.moduleDatastore.Delete(getModuleCollectionProvider(), moduleId)
+	return
+}
+
+func getModuleCollectionProvider() (collectionProvider database.CollectionProvider) {
+	collectionProvider = database.CollectionProvider{
+		DbProvider:database.PROJECT,
+		CollectionName:"modules",
+	}
+	return
 }

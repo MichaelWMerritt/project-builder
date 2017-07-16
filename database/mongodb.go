@@ -1,33 +1,31 @@
 package database
 
 import (
-	//"fmt"
-	//"log"
-
 	"gopkg.in/mgo.v2"
-
-	//"os"
-	//"fmt"
-	//"encoding/json"
-	//"github.com/michaelwmerritt/project-builder/model"
+	"log"
+)
+var (
+	mgoSession *mgo.Session
 )
 
-const (
-	mongodb_url = "localhost"
-	mongodb_config_file = "/path/to/config/file"
-)
-
-func GetDB(databaseName string) *mgo.Database {
-	session, err := mgo.Dial(mongodb_url)
-	if err != nil {
-		panic(err)
+func getSession () *mgo.Session {
+	if mgoSession == nil {
+		var err error
+		mgoSession, err = mgo.Dial("localhost")
+		if err != nil {
+			log.Fatal("Unable to connect to database at: " + "localhost")
+		}
+		mgoSession.SetMode(mgo.Monotonic, true)
+		mgoSession.SetSafe(&mgo.Safe{})
 	}
-	//defer session.Close()
+	return mgoSession.Copy()
+}
 
-	session.SetMode(mgo.Monotonic, true)
-	session.SetSafe(&mgo.Safe{})
-
-	return session.DB(databaseName)
+func WithCollection(dbProvider DBProvider, collectionName string, s func(*mgo.Collection) error) error {
+	session := getSession()
+	defer session.Close()
+	collection := dbProvider.DB(session).C(collectionName)
+	return s(collection)
 }
 
 //func LoadMongoDBConfiguration() model.MongoDBConfig {
