@@ -51,6 +51,6 @@ func initializeRoutes() []model.Route {
 	routes := controller.CreateIndexRoutes()
 	routes = append(routes, controller.CreateReleaseRoutes()...)
 	routes = append(routes, controller.CreateModuleRoutes()...)
-	routes = append(routes, controller.CreateBuilderRoutes()...)
+	routes = append(routes, controller.CreateBuildRoutes()...)
 	return routes
 }

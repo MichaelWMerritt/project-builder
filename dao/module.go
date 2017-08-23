@@ -15,8 +15,8 @@ func NewModuleDao() ModuleDao {
 	return ModuleDao{moduleDatastore:datastore.NewModuleDatastore()}
 }
 
-func (moduleDao ModuleDao) GetAllModules() (modules []model.Module, err error) {
-	results, err := moduleDao.moduleDatastore.Find(getModuleCollectionProvider(), bson.M{}, 0, 0)
+func (moduleDao ModuleDao) GetAllModules(query bson.M) (modules []model.Module, err error) {
+	results, err := moduleDao.moduleDatastore.Find(getModuleCollectionProvider(), query, 0, 0)
 	modules = make([]model.Module, len(results))
 	for i, module := range results {
 		var m model.Module

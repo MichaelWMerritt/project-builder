@@ -45,7 +45,7 @@ func (releaseDao ReleaseDao) DeleteRelease(releaseId string) (err error) {
 func getReleaseCollectionProvider() (collectionProvider database.CollectionProvider) {
 	collectionProvider = database.CollectionProvider{
 		DbProvider:database.PROJECT,
-		CollectionName:"release",
+		CollectionName:"releases",
 	}
 	return
 }

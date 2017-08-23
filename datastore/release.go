@@ -1,9 +1,9 @@
 package datastore
 
 type Release struct {
-	Base
+	Collection
 }
 
 func NewReleaseDatastore() Release {
-	return Release{Base{}}
+	return Release{Collection{}}
 }

@@ -7,6 +7,12 @@ import (
 	"github.com/michaelwmerritt/project-builder/model"
 	"github.com/michaelwmerritt/project-builder/dao"
 	"github.com/michaelwmerritt/project-builder/server"
+	"gopkg.in/mgo.v2/bson"
+)
+
+const (
+	MODULES_ENDPOINT = "/modules"
+	MODULE_ID = "moduleId"
 )
 
 var (
@@ -18,26 +24,34 @@ func CreateModuleRoutes() []model.Route {
 		{
 			"GetAllModules",
 			"GET",
-			server.API_ENDPOINT + "/modules",
+			server.API_ENDPOINT + MODULES_ENDPOINT,
 			GetAllModules,
 		},
 		{
 			"GetModule",
 			"GET",
-			server.API_ENDPOINT + "/modules/{moduleId}",
+			server.API_ENDPOINT + MODULES_ENDPOINT + "/{moduleId}",
 			GetModule,
 		},
 		{
 			"DeleteModule",
 			"DELETE",
-			server.API_ENDPOINT + "/modules/{moduleId}",
+			server.API_ENDPOINT + MODULES_ENDPOINT + "/{moduleId}",
 			DeleteModule,
 		},
 	}
 }
 
-func GetAllModules(w http.ResponseWriter, r *http.Request) {
-	modules, err := moduleDao.GetAllModules()
+func GetAllModules(w http.ResponseWriter, request *http.Request) {
+	if err := request.ParseForm(); err != nil {
+		// handle error
+	}
+	releaseVersion := request.Form.Get("releaseVersion")
+	query := bson.M{}
+	if releaseVersion != "" {
+		query["versionInfo.version"] = releaseVersion
+	}
+	modules, err := moduleDao.GetAllModules(query)
 	if err != nil {
 		HandleError(w, err)
 		return
@@ -73,5 +87,5 @@ func DeleteModule(w http.ResponseWriter, r *http.Request) {
 }
 
 func getModuleId(r *http.Request) string {
-	return mux.Vars(r)["moduleId"]
+	return mux.Vars(r)[MODULE_ID]
 }

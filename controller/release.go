@@ -9,7 +9,10 @@ import (
 	"github.com/michaelwmerritt/project-builder/server"
 )
 
-const RELEASE_ID  = "releaseId"
+const (
+	RELEASES_ENDPOINT = server.API_ENDPOINT + "/releases"
+	RELEASE_ID  = "releaseId"
+)
 
 var (
 	releaseDao = dao.NewReleaseDao()
@@ -20,19 +23,19 @@ func CreateReleaseRoutes() []model.Route {
 		{
 			"GetAllReleases",
 			"GET",
-			server.API_ENDPOINT + "/releases",
+			RELEASES_ENDPOINT,
 			GetAllReleases,
 		},
 		{
 			"GetRelease",
 			"GET",
-			server.API_ENDPOINT + "/releases/{releaseId}",
+			RELEASES_ENDPOINT + "/{releaseId}",
 			GetRelease,
 		},
 		{
 			"DeleteRelease",
 			"DELETE",
-			server.API_ENDPOINT + "/releases/{releaseId}",
+			RELEASES_ENDPOINT + "/{releaseId}",
 			DeleteRelease,
 		},
 	}

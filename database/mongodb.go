@@ -4,6 +4,11 @@ import (
 	"gopkg.in/mgo.v2"
 	"log"
 )
+
+const (
+	HOST = "localhost"
+)
+
 var (
 	mgoSession *mgo.Session
 )
@@ -11,9 +16,9 @@ var (
 func getSession () *mgo.Session {
 	if mgoSession == nil {
 		var err error
-		mgoSession, err = mgo.Dial("localhost")
+		mgoSession, err = mgo.Dial(HOST)
 		if err != nil {
-			log.Fatal("Unable to connect to database at: " + "localhost")
+			log.Fatal("Unable to connect to database at: " + HOST)
 		}
 		mgoSession.SetMode(mgo.Monotonic, true)
 		mgoSession.SetSafe(&mgo.Safe{})
@@ -26,6 +31,20 @@ func WithCollection(dbProvider DBProvider, collectionName string, s func(*mgo.Co
 	defer session.Close()
 	collection := dbProvider.DB(session).C(collectionName)
 	return s(collection)
+}
+
+func WithGridFS(dbProvider DBProvider, gridFsPrefix string, s func(fs *mgo.GridFS) error) error {
+	session := getSession()
+	defer session.Close()
+	gridFs := dbProvider.DB(session).GridFS(gridFsPrefix)
+	return s(gridFs)
+}
+
+func WithGridFSFile(dbProvider DBProvider, gridFsPrefix string, s func(fs *mgo.GridFS) (*mgo.GridFile, error)) (*mgo.GridFile, error) {
+	session := getSession()
+	defer session.Close()
+	gridFs := dbProvider.DB(session).GridFS(gridFsPrefix)
+	return s(gridFs)
 }
 
 //func LoadMongoDBConfiguration() model.MongoDBConfig {
